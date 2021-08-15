@@ -1,13 +1,13 @@
 use bevy::prelude::*;
 
-use crate::{LetterboxedProjection, PixelSpriteQuad};
+use crate::{BoxFitProjection, SpriteQuad};
 
 /// Provides an opaque border around the desired resolution.
-pub struct LetterboxPlugin {
+pub struct BoxFitBorderPlugin {
     pub color: Color,
 }
 
-impl Plugin for LetterboxPlugin {
+impl Plugin for BoxFitBorderPlugin {
     fn build(&self, app: &mut AppBuilder) {
         app.insert_resource(BorderColor(self.color))
             .add_startup_system(spawn_borders.system())
@@ -31,7 +31,7 @@ fn spawn_borders(
     mut commands: Commands,
     color: Res<BorderColor>,
     mut materials: ResMut<Assets<ColorMaterial>>,
-    quad: Res<PixelSpriteQuad>,
+    quad: Res<SpriteQuad>,
 ) {
     let material = materials.add(color.0.into());
     commands
@@ -70,15 +70,15 @@ fn spawn_borders(
 
 fn resize_borders(
     cameras: Query<
-        (&LetterboxedProjection, &Transform),
-        Or<(Changed<LetterboxedProjection>, Changed<Transform>)>,
+        (&BoxFitProjection, &Transform),
+        Or<(Changed<BoxFitProjection>, Changed<Transform>)>,
     >,
-    mut borders: Query<(&mut Sprite, &mut Transform, &Border), Without<LetterboxedProjection>>,
+    mut borders: Query<(&mut Sprite, &mut Transform, &Border), Without<BoxFitProjection>>,
 ) {
     if let Some((projection, transform)) = cameras.iter().next() {
         let z = projection.far - 0.2;
-        let width = projection.desired_width.map(|w| w as f32).unwrap_or(0.0);
-        let height = projection.desired_height.map(|h| h as f32).unwrap_or(0.0);
+        let width = projection.virtual_width as f32;
+        let height = projection.virtual_height as f32;
         let left = transform.translation.x
             + if projection.centered {
                 -(width / 2.0).round()

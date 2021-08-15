@@ -85,12 +85,12 @@
 //!
 //! at your option.
 
-mod letterbox_border;
-mod letterbox_plugin;
-mod letterboxed_camera;
+mod box_fit_border;
+mod box_fit_camera;
+mod box_fit_plugin;
 #[cfg(test)]
 mod tests;
 
-pub use letterbox_border::*;
-pub use letterbox_plugin::*;
-pub use letterboxed_camera::*;
+pub use box_fit_border::*;
+pub use box_fit_camera::*;
+pub use box_fit_plugin::*;

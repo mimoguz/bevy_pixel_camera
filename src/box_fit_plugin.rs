@@ -4,41 +4,41 @@ use bevy::prelude::{
 use bevy::render::camera;
 
 /// Provides the camera system, and the quad resource for sprite meshes.
-pub struct LetterboxedCameraPlugin;
+pub struct BoxFitCameraPlugin;
 
-impl Plugin for LetterboxedCameraPlugin {
+impl Plugin for BoxFitCameraPlugin {
     fn build(&self, app: &mut AppBuilder) {
         app.add_startup_system_to_stage(
             StartupStage::PreStartup,
-            setup_pixel_camera_plugin.system(),
+            setup_box_fit_camera_plugin.system(),
         )
         .add_system_to_stage(
             CoreStage::PostUpdate,
-            camera::camera_system::<super::LetterboxedProjection>.system(),
+            camera::camera_system::<super::BoxFitProjection>.system(),
         );
     }
 }
 
-fn setup_pixel_camera_plugin(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>) {
-    let quad = PixelSpriteQuad(meshes.add(make_quad()));
+fn setup_box_fit_camera_plugin(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>) {
+    let quad = SpriteQuad(meshes.add(make_quad()));
     commands.insert_resource(quad);
 }
 
 use bevy::math::vec2;
 use bevy::render::mesh::Indices;
 
-/// Resource inserted by `PixelCameraPlugin`, to replace bevy's default mesh for
+/// Resource inserted by `BoxFitCameraPlugin`, to replace bevy's default mesh for
 /// sprite bundles.
 #[derive(Clone)]
-pub struct PixelSpriteQuad(Handle<Mesh>);
+pub struct SpriteQuad(Handle<Mesh>);
 
-impl From<Handle<Mesh>> for PixelSpriteQuad {
+impl From<Handle<Mesh>> for SpriteQuad {
     fn from(handle: Handle<Mesh>) -> Self {
         Self(handle)
     }
 }
 
-impl Into<Handle<Mesh>> for PixelSpriteQuad {
+impl Into<Handle<Mesh>> for SpriteQuad {
     fn into(self) -> Handle<Mesh> {
         self.0
     }
