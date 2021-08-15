@@ -62,7 +62,7 @@ fn spawn_borders(
         .spawn()
         .insert(Border::Bottom)
         .insert_bundle(SpriteBundle {
-            material: material.clone(),
+            material,
             mesh: quad.clone().into(),
             ..Default::default()
         });
@@ -76,7 +76,7 @@ fn resize_borders(
     mut borders: Query<(&mut Sprite, &mut Transform, &Border), Without<BoxFitProjection>>,
 ) {
     if let Some((projection, transform)) = cameras.iter().next() {
-        let z = projection.far - 0.2;
+        let z = projection.far() - 0.2;
         let width = projection.virtual_width as f32;
         let height = projection.virtual_height as f32;
         let left = transform.translation.x

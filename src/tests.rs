@@ -115,10 +115,7 @@ fn expensive_projection_test_for_zoom(zoom: i32) {
 
 fn projection_test_for_width_height_zoom(width: i32, height: i32, zoom: f32) {
     let mut window_projection = bevy::render::camera::OrthographicProjection::default();
-    let mut virtual_projection = BoxFitProjection {
-        zoom: zoom,
-        ..Default::default()
-    };
+    let mut virtual_projection = BoxFitProjection::from_resolution(width, height);
     virtual_projection.update(width as f32, height as f32);
     window_projection.update(width as f32, height as f32);
 
@@ -127,8 +124,8 @@ fn projection_test_for_width_height_zoom(width: i32, height: i32, zoom: f32) {
 
     let virtual_width = width as f32 / zoom;
     let virtual_height = height as f32 / zoom;
-    for x in -(virtual_width as i32 / 2)..((virtual_width - virtual_width) as i32 / 2) {
-        for y in -(virtual_height as i32 / 2)..((virtual_height - virtual_height) as i32 / 2) {
+    for x in -(virtual_width as i32 / 2)..(virtual_width as i32 - virtual_width as i32 / 2) {
+        for y in -(virtual_height as i32 / 2)..(virtual_height as i32 - virtual_height as i32 / 2) {
             let virtual_pixel = Vec4::new(x as f32, y as f32, 0.0, 1.0);
             let expected_window_pixel = Vec4::new(
                 (virtual_pixel.x + ((virtual_width as i32 / 2) as f32)) * (zoom as f32),
