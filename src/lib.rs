@@ -85,12 +85,12 @@
 //!
 //! at your option.
 
-mod pixel_border;
-mod pixel_camera;
-mod pixel_plugin;
+mod letterbox_border;
+mod letterbox_plugin;
+mod letterboxed_camera;
 #[cfg(test)]
 mod tests;
 
-pub use pixel_border::*;
-pub use pixel_camera::*;
-pub use pixel_plugin::*;
+pub use letterbox_border::*;
+pub use letterbox_plugin::*;
+pub use letterboxed_camera::*;
