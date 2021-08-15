@@ -4,9 +4,9 @@ use bevy::prelude::{
 use bevy::render::camera;
 
 /// Provides the camera system, and the quad resource for sprite meshes.
-pub struct PixelCameraPlugin;
+pub struct LetterboxedCameraPlugin;
 
-impl Plugin for PixelCameraPlugin {
+impl Plugin for LetterboxedCameraPlugin {
     fn build(&self, app: &mut AppBuilder) {
         app.add_startup_system_to_stage(
             StartupStage::PreStartup,
@@ -14,7 +14,7 @@ impl Plugin for PixelCameraPlugin {
         )
         .add_system_to_stage(
             CoreStage::PostUpdate,
-            camera::camera_system::<super::PixelProjection>.system(),
+            camera::camera_system::<super::LetterboxedProjection>.system(),
         );
     }
 }

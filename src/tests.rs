@@ -7,7 +7,7 @@ fn projection_test_around_240x240() {
     for width in 230..250 {
         for height in 230..250 {
             for zoom in 1..5 {
-                projection_test_for_width_height_zoom(width, height, zoom);
+                projection_test_for_width_height_zoom(width, height, zoom as f32);
             }
         }
     }
@@ -18,7 +18,7 @@ fn projection_test_around_1280x720() {
     for width in 1275..1285 {
         for height in 715..725 {
             for zoom in 2..6 {
-                projection_test_for_width_height_zoom(width, height, zoom);
+                projection_test_for_width_height_zoom(width, height, zoom as f32);
             }
         }
     }
@@ -29,7 +29,7 @@ fn projection_test_around_1920x1080() {
     for width in 1915..1925 {
         for height in 1075..1085 {
             for zoom in 2..6 {
-                projection_test_for_width_height_zoom(width, height, zoom);
+                projection_test_for_width_height_zoom(width, height, zoom as f32);
             }
         }
     }
@@ -40,7 +40,7 @@ fn projection_test_around_3840x2160() {
     for width in 3836..3844 {
         for height in 2156..2164 {
             for zoom in 3..6 {
-                projection_test_for_width_height_zoom(width, height, zoom);
+                projection_test_for_width_height_zoom(width, height, zoom as f32);
             }
         }
     }
@@ -108,14 +108,14 @@ fn expensive_projection_test_for_zoom(zoom: i32) {
             width, min_height, max_height, zoom
         );
         for height in min_height..max_height {
-            projection_test_for_width_height_zoom(width, height, zoom);
+            projection_test_for_width_height_zoom(width, height, zoom as f32);
         }
     }
 }
 
-fn projection_test_for_width_height_zoom(width: i32, height: i32, zoom: i32) {
+fn projection_test_for_width_height_zoom(width: i32, height: i32, zoom: f32) {
     let mut window_projection = bevy::render::camera::OrthographicProjection::default();
-    let mut virtual_projection = PixelProjection {
+    let mut virtual_projection = LetterboxedProjection {
         zoom: zoom,
         ..Default::default()
     };
@@ -125,14 +125,14 @@ fn projection_test_for_width_height_zoom(width: i32, height: i32, zoom: i32) {
     let virtual_matrix = virtual_projection.get_projection_matrix();
     let window_matrix = window_projection.get_projection_matrix();
 
-    let virtual_width = width / zoom;
-    let virtual_height = height / zoom;
-    for x in -(virtual_width / 2)..(virtual_width - virtual_width / 2) {
-        for y in -(virtual_height / 2)..(virtual_height - virtual_height / 2) {
+    let virtual_width = width as f32 / zoom;
+    let virtual_height = height as f32 / zoom;
+    for x in -(virtual_width as i32 / 2)..((virtual_width - virtual_width) as i32 / 2) {
+        for y in -(virtual_height as i32 / 2)..((virtual_height - virtual_height) as i32 / 2) {
             let virtual_pixel = Vec4::new(x as f32, y as f32, 0.0, 1.0);
             let expected_window_pixel = Vec4::new(
-                (virtual_pixel.x + ((virtual_width / 2) as f32)) * (zoom as f32),
-                (virtual_pixel.y + ((virtual_height / 2) as f32)) * (zoom as f32),
+                (virtual_pixel.x + ((virtual_width as i32 / 2) as f32)) * (zoom as f32),
+                (virtual_pixel.y + ((virtual_height as i32 / 2) as f32)) * (zoom as f32),
                 0.0,
                 1.0,
             );

@@ -45,14 +45,14 @@
 //! ```no_run
 //! use bevy::prelude::*;
 //! use bevy_pixel_camera::{
-//!     PixelBorderPlugin, PixelCameraBundle, PixelCameraPlugin, PixelSpriteQuad
+//!     LetterboxPlugin, LetterboxedCameraBundle, LetterboxedCameraPlugind, PixelSpriteQuad
 //! };
 //!
 //! fn main() {
 //!     App::build()
 //!         .add_plugins(DefaultPlugins)
-//!         .add_plugin(PixelCameraPlugin)
-//!         .add_plugin(PixelBorderPlugin {
+//!         .add_plugin(LetterboxedCameraPlugind)
+//!         .add_plugin(LetterboxPlugin {
 //!             color: Color::rgb(0.1, 0.1, 0.1),
 //!         })
 //!         .add_startup_system(setup.system())
@@ -65,7 +65,7 @@
 //!     mut materials: ResMut<Assets<ColorMaterial>>,
 //!     quad: Res<PixelSpriteQuad>,
 //! ) {
-//!     commands.spawn_bundle(PixelCameraBundle::from_resolution(320, 240));
+//!     commands.spawn_bundle(LetterboxedCameraBundle::from_resolution(320, 240));
 //!
 //!     let sprite_handle = materials.add(asset_server.load("my-pixel-art-sprite.png").into());
 //!     commands.spawn_bundle(SpriteBundle {

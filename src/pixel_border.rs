@@ -1,13 +1,13 @@
 use bevy::prelude::*;
 
-use crate::{PixelProjection, PixelSpriteQuad};
+use crate::{LetterboxedProjection, PixelSpriteQuad};
 
 /// Provides an opaque border around the desired resolution.
-pub struct PixelBorderPlugin {
+pub struct LetterboxPlugin {
     pub color: Color,
 }
 
-impl Plugin for PixelBorderPlugin {
+impl Plugin for LetterboxPlugin {
     fn build(&self, app: &mut AppBuilder) {
         app.insert_resource(BorderColor(self.color))
             .add_startup_system(spawn_borders.system())
@@ -70,10 +70,10 @@ fn spawn_borders(
 
 fn resize_borders(
     cameras: Query<
-        (&PixelProjection, &Transform),
-        Or<(Changed<PixelProjection>, Changed<Transform>)>,
+        (&LetterboxedProjection, &Transform),
+        Or<(Changed<LetterboxedProjection>, Changed<Transform>)>,
     >,
-    mut borders: Query<(&mut Sprite, &mut Transform, &Border), Without<PixelProjection>>,
+    mut borders: Query<(&mut Sprite, &mut Transform, &Border), Without<LetterboxedProjection>>,
 ) {
     if let Some((projection, transform)) = cameras.iter().next() {
         let z = projection.far - 0.2;

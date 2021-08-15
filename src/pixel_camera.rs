@@ -6,19 +6,19 @@ use bevy::render::camera::{Camera, CameraProjection, DepthCalculation, VisibleEn
 /// When using this camera, world coordinates are expressed using virtual
 /// pixels, which are always mapped to a multiple of actual screen pixels.
 #[derive(Bundle)]
-pub struct PixelCameraBundle {
+pub struct LetterboxedCameraBundle {
     pub camera: Camera,
-    pub pixel_projection: PixelProjection,
+    pub pixel_projection: LetterboxedProjection,
     pub visible_entities: VisibleEntities,
     pub transform: Transform,
     pub global_transform: GlobalTransform,
 }
 
-impl PixelCameraBundle {
+impl LetterboxedCameraBundle {
     /// Create a component bundle for a camera where the size of virtual pixels
     /// are specified with `zoom`.
-    pub fn from_zoom(zoom: i32) -> Self {
-        let projection = PixelProjection {
+    pub fn from_zoom(zoom: f32) -> Self {
+        let projection = LetterboxedProjection {
             zoom: zoom,
             ..Default::default()
         };
@@ -44,7 +44,7 @@ impl PixelCameraBundle {
                 name: Some(bevy::render::render_graph::base::camera::CAMERA_2D.to_string()),
                 ..Default::default()
             },
-            pixel_projection: PixelProjection {
+            pixel_projection: LetterboxedProjection {
                 desired_width: Some(width),
                 desired_height: Some(height),
                 ..Default::default()
@@ -64,7 +64,7 @@ impl PixelCameraBundle {
                 name: Some(bevy::render::render_graph::base::camera::CAMERA_2D.to_string()),
                 ..Default::default()
             },
-            pixel_projection: PixelProjection {
+            pixel_projection: LetterboxedProjection {
                 desired_width: Some(width),
                 ..Default::default()
             },
@@ -83,7 +83,7 @@ impl PixelCameraBundle {
                 name: Some(bevy::render::render_graph::base::camera::CAMERA_2D.to_string()),
                 ..Default::default()
             },
-            pixel_projection: PixelProjection {
+            pixel_projection: LetterboxedProjection {
                 desired_height: Some(height),
                 ..Default::default()
             },
@@ -101,7 +101,7 @@ impl PixelCameraBundle {
 /// field).
 #[derive(Debug, Clone, Reflect)]
 #[reflect(Component)]
-pub struct PixelProjection {
+pub struct LetterboxedProjection {
     pub left: f32,
     pub right: f32,
     pub bottom: f32,
@@ -119,14 +119,14 @@ pub struct PixelProjection {
 
     /// If neither `desired_width` nor `desired_height` are present, zoom can be
     /// manually set. The value detemines the size of the virtual pixels.
-    pub zoom: i32,
+    pub zoom: f32,
 
     // If true, (0, 0) is the pixel closest to the center of the windoe,
     // otherwise it's at bottom left.
     pub centered: bool,
 }
 
-impl CameraProjection for PixelProjection {
+impl CameraProjection for LetterboxedProjection {
     fn get_projection_matrix(&self) -> Mat4 {
         Mat4::orthographic_rh(
             self.left,
@@ -142,19 +142,19 @@ impl CameraProjection for PixelProjection {
         let mut zoom_x = None;
         if let Some(desired_width) = self.desired_width {
             if desired_width > 0 {
-                zoom_x = Some((width as i32) / desired_width);
+                zoom_x = Some(width / desired_width as f32);
             }
         }
         let mut zoom_y = None;
         if let Some(desired_height) = self.desired_height {
             if desired_height > 0 {
-                zoom_y = Some((height as i32) / desired_height);
+                zoom_y = Some(height / desired_height as f32);
             }
         }
         match (zoom_x, zoom_y) {
-            (Some(zoom_x), Some(zoom_y)) => self.zoom = zoom_x.min(zoom_y).max(1),
-            (Some(zoom_x), None) => self.zoom = zoom_x.max(1),
-            (None, Some(zoom_y)) => self.zoom = zoom_y.max(1),
+            (Some(zoom_x), Some(zoom_y)) => self.zoom = zoom_x.min(zoom_y).max(1.0),
+            (Some(zoom_x), None) => self.zoom = zoom_x.max(1.0),
+            (None, Some(zoom_y)) => self.zoom = zoom_y.max(1.0),
             (None, None) => (),
         }
 
@@ -178,7 +178,7 @@ impl CameraProjection for PixelProjection {
     }
 }
 
-impl Default for PixelProjection {
+impl Default for LetterboxedProjection {
     fn default() -> Self {
         Self {
             left: -1.0,
@@ -189,7 +189,7 @@ impl Default for PixelProjection {
             far: 1000.0,
             desired_width: None,
             desired_height: None,
-            zoom: 1,
+            zoom: 1.0,
             centered: true,
         }
     }
